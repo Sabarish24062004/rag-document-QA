@@ -1,0 +1,18 @@
+# Web API
+fastapi==0.115.*
+uvicorn[standard]==0.32.*
+python-dotenv==1.0.*
+python-multipart==0.0.*
+
+# PDF text extraction
+pymupdf==1.26.*
+
+# Vector DB + local embedding model (all-MiniLM-L6-v2, ONNX)
+chromadb==1.*
+
+# LLM answer generation (optional: falls back to passage mode without a key)
+openai==1.*
+
+# Testing
+pytest==8.*
+httpx==0.28.*

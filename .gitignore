@@ -1,0 +1,27 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Vector DB (rebuilt from documents)
+chroma_db/
+
+# Uploaded documents may be private — keep folder, ignore contents
+data/documents/*
+!data/documents/.gitkeep
+
+# Evaluation run outputs
+evaluation/results.*
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
