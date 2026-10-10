@@ -3,11 +3,13 @@
 import hashlib
 import math
 import re
+from dataclasses import replace
 
 import pymupdf
 import pytest
 from fastapi.testclient import TestClient
 
+from app import config
 from app.api.routes import get_pipeline
 from app.main import app
 from app.rag.pipeline import RAGPipeline
@@ -69,8 +71,13 @@ def pipeline(tmp_path):
     )
 
 
+def set_password(monkeypatch, password: str) -> None:
+    monkeypatch.setattr(config, "settings", replace(config.settings, app_password=password))
+
+
 @pytest.fixture
-def client(pipeline):
+def client(pipeline, monkeypatch):
+    set_password(monkeypatch, "")  # independent of APP_PASSWORD in .env
     app.dependency_overrides[get_pipeline] = lambda: pipeline
     with TestClient(app) as test_client:
         yield test_client

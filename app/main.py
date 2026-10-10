@@ -5,11 +5,13 @@ Then open http://127.0.0.1:8000 for the web UI (API docs at /docs).
 """
 
 import logging
+import mimetypes
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app.api.routes import router
+from app.auth import AuthMiddleware, router as auth_router
 from app.config import settings
 
 logging.basicConfig(
@@ -24,6 +26,8 @@ app = FastAPI(
     version="1.0.0",
 )
 
+app.add_middleware(AuthMiddleware)
+app.include_router(auth_router)
 app.include_router(router)
 
 
@@ -32,6 +36,9 @@ def health() -> dict[str, str]:
     """Health check used by the frontend and monitoring."""
     return {"status": "healthy"}
 
+
+# Not in every OS mimetypes table; browsers need it to install the app.
+mimetypes.add_type("application/manifest+json", ".webmanifest")
 
 # Mounted last so /api and /health take precedence; serves index.html at "/".
 app.mount("/", StaticFiles(directory=settings.frontend_dir, html=True), name="frontend")

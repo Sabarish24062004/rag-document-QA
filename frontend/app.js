@@ -21,6 +21,12 @@ const els = {
   toast: $("#toast"),
   sidebar: $("#sidebar"),
   sidebarToggle: $("#sidebar-toggle"),
+  installBtn: $("#install-btn"),
+  logoutBtn: $("#logout-btn"),
+  login: $("#login"),
+  loginForm: $("#login-form"),
+  loginPassword: $("#login-password"),
+  loginError: $("#login-error"),
 };
 
 const state = {
@@ -51,6 +57,7 @@ function toast(message) {
 
 async function api(path, options = {}) {
   const response = await fetch(path, options);
+  if (response.status === 401 && path !== "/api/login") showLogin();
   let body = null;
   try { body = await response.json(); } catch { /* empty or non-JSON body */ }
   if (!response.ok) {
@@ -376,8 +383,72 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// ---------- login ----------
+
+function showLogin() {
+  els.login.hidden = false;
+  els.loginPassword.focus();
+}
+
+els.loginForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  els.loginError.textContent = "";
+  try {
+    await api("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: els.loginPassword.value }),
+    });
+  } catch (err) {
+    els.loginError.textContent = err.message;
+    els.loginPassword.select();
+    return;
+  }
+  els.loginPassword.value = "";
+  els.login.hidden = true;
+  start();
+});
+
+els.logoutBtn.addEventListener("click", async () => {
+  try { await api("/api/logout", { method: "POST" }); } catch { /* already logged out */ }
+  location.reload();
+});
+
+// ---------- install as an app ----------
+
+let installPrompt = null;
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  installPrompt = e;
+  els.installBtn.hidden = false;
+});
+els.installBtn.addEventListener("click", async () => {
+  if (!installPrompt) return;
+  installPrompt.prompt();
+  await installPrompt.userChoice;
+  installPrompt = null;
+  els.installBtn.hidden = true;
+});
+window.addEventListener("appinstalled", () => { els.installBtn.hidden = true; });
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js").catch(() => { /* app still works without it */ });
+}
+
 // ---------- init ----------
 
-loadStatus();
-loadDocuments();
-els.question.focus();
+function start() {
+  loadStatus();
+  loadDocuments();
+  // Don't pop up the on-screen keyboard on phones.
+  if (matchMedia("(pointer: fine)").matches) els.question.focus();
+}
+
+(async () => {
+  try {
+    const session = await api("/api/session");
+    els.logoutBtn.hidden = !session.auth_required;
+    if (!session.authenticated) return showLogin();
+  } catch { /* offline: start() shows the status */ }
+  start();
+})();

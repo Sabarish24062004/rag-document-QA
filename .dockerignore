@@ -1,0 +1,11 @@
+.env
+.git
+.venv
+venv
+.pytest_cache
+**/__pycache__
+chroma_db
+data
+tests
+.vscode
+.idea

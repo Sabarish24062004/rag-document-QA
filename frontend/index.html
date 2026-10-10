@@ -4,7 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Document Q&amp;A</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%234f46e5'/><path d='M10 8h9l4 4v12H10z' fill='white'/></svg>">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="description" content="Ask questions about your PDFs. Every answer cites its sources.">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Doc Q&amp;A">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -20,6 +26,10 @@
     </div>
     <div class="topbar-right">
       <span id="status-pill" class="pill">Connecting…</span>
+      <button id="install-btn" class="ghost" type="button" hidden>Install app</button>
+      <button id="logout-btn" class="icon-btn" type="button" title="Log out" aria-label="Log out" hidden>
+        <svg viewBox="0 0 24 24" width="19" height="19"><path d="M15 4h3a1 1 0 011 1v14a1 1 0 01-1 1h-3M10 16l-4-4 4-4M6 12h10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
       <button id="sidebar-toggle" class="icon-btn only-mobile" aria-label="Show documents">
         <svg viewBox="0 0 24 24" width="20" height="20"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
@@ -84,6 +94,17 @@
         </div>
       </form>
     </main>
+  </div>
+
+  <div id="login" class="login" hidden>
+    <form id="login-form" class="login-card">
+      <img src="icons/icon.svg" alt="" width="56" height="56">
+      <h2>Document Q&amp;A</h2>
+      <p>Enter the password to continue.</p>
+      <input id="login-password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required>
+      <p id="login-error" class="login-error" role="alert"></p>
+      <button class="primary wide" type="submit">Log in</button>
+    </form>
   </div>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>

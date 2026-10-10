@@ -63,6 +63,8 @@ class Settings:
 
     app_name: str = os.getenv("APP_NAME", "RAG Document Q&A")
     log_level: str = os.getenv("LOG_LEVEL", "INFO")
+    # Empty = no login (local use). Set it whenever the app is reachable by others.
+    app_password: str = os.getenv("APP_PASSWORD", "")
     llm: LLMConfig = resolve_llm()
     documents_dir: Path = BASE_DIR / os.getenv("DOCUMENTS_DIR", "data/documents")
     chroma_dir: Path = BASE_DIR / os.getenv("CHROMA_DIR", "chroma_db")
