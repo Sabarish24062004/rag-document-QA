@@ -1,3 +1,14 @@
+---
+title: Document Q&A
+emoji: 📄
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 8000
+pinned: false
+short_description: Ask questions about your PDFs, with cited sources
+---
+
 # RAG Document Q&A
 
 Upload PDFs, ask questions in plain language, and get answers grounded in your documents, with citations that link to the exact page.
@@ -62,7 +73,24 @@ Open http://127.0.0.1:8000. The first upload downloads the embedding model (abou
 
 Interactive API docs: http://127.0.0.1:8000/docs
 
-## Host it online (Docker)
+## Host it free on Hugging Face Spaces
+
+The block at the top of this README configures a [Hugging Face Space](https://huggingface.co/spaces) that builds the `Dockerfile`. Free Spaces have 2 CPUs and 16 GB RAM and come with HTTPS, so the app can be installed on phones.
+
+1. Create a free account at https://huggingface.co and an access token with **write** permission (Settings → Access Tokens).
+2. Log in and upload (replace `USER` with your Hugging Face username):
+   ```powershell
+   .venv\Scripts\hf auth login
+   .venv\Scripts\hf repos create USER/doc-qa --repo-type space --space-sdk docker --exist-ok
+   .venv\Scripts\hf upload USER/doc-qa . . --repo-type space --include Dockerfile --include .dockerignore --include README.md --include requirements.txt --include "app/*.py" --include "frontend/*" --exclude "*__pycache__*"
+   ```
+   The `--include` list uploads only the app's code, never `.env` (your keys) or your PDFs.
+3. On the Space page, open **Settings → Variables and secrets** and add the **secrets** `GEMINI_API_KEY` and `APP_PASSWORD`. The Space restarts with them.
+4. Use the direct link `https://USER-doc-qa.hf.space`. Don't use the `huggingface.co/spaces/...` page: it shows the app inside a frame where browsers block the login cookie.
+
+Free-tier limits: uploaded PDFs are deleted whenever the Space restarts (after an update, or after it sleeps following about 48 hours without visitors), so re-upload them afterwards. Run the `hf upload` command again to deploy code changes.
+
+## Host it on your own server (Docker)
 
 The repo includes a `Dockerfile` and a `docker-compose.yml` that runs the app behind [Caddy](https://caddyserver.com), which obtains a free HTTPS certificate automatically. HTTPS is required for installing the app on phones.
 
