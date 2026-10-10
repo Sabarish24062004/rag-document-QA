@@ -1,14 +1,3 @@
----
-title: Document Q&A
-emoji: 📄
-colorFrom: indigo
-colorTo: blue
-sdk: docker
-app_port: 8000
-pinned: false
-short_description: Ask questions about your PDFs, with cited sources
----
-
 # RAG Document Q&A
 
 Upload PDFs, ask questions in plain language, and get answers grounded in your documents, with citations that link to the exact page.
@@ -73,22 +62,19 @@ Open http://127.0.0.1:8000. The first upload downloads the embedding model (abou
 
 Interactive API docs: http://127.0.0.1:8000/docs
 
-## Host it free on Hugging Face Spaces
+## Share it from your PC (free, no server)
 
-The block at the top of this README configures a [Hugging Face Space](https://huggingface.co/spaces) that builds the `Dockerfile`. Free Spaces have 2 CPUs and 16 GB RAM and come with HTTPS, so the app can be installed on phones.
+`share.ps1` starts the app and opens a free [Cloudflare quick tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/do-more-with-tunnels/trycloudflare/), which gives a public HTTPS link such as `https://some-random-words.trycloudflare.com`. HTTPS means the app can also be installed on phones.
 
-1. Create a free account at https://huggingface.co and an access token with **write** permission (Settings → Access Tokens).
-2. Log in and upload (replace `USER` with your Hugging Face username):
+1. Install the tunnel tool once: `winget install --id Cloudflare.cloudflared`
+2. In `.env`, set `APP_PASSWORD=<a long password>`. The script refuses to run without it, because the link is public.
+3. Run:
    ```powershell
-   .venv\Scripts\hf auth login
-   .venv\Scripts\hf repos create USER/doc-qa --repo-type space --space-sdk docker --exist-ok
-   .venv\Scripts\hf upload USER/doc-qa . . --repo-type space --include Dockerfile --include .dockerignore --include README.md --include requirements.txt --include "app/*.py" --include "frontend/*" --exclude "*__pycache__*"
+   powershell -ExecutionPolicy Bypass -File share.ps1
    ```
-   The `--include` list uploads only the app's code, never `.env` (your keys) or your PDFs.
-3. On the Space page, open **Settings → Variables and secrets** and add the **secrets** `GEMINI_API_KEY` and `APP_PASSWORD`. The Space restarts with them.
-4. Use the direct link `https://USER-doc-qa.hf.space`. Don't use the `huggingface.co/spaces/...` page: it shows the app inside a frame where browsers block the login cookie.
+4. Open the green link it prints on any device and log in.
 
-Free-tier limits: uploaded PDFs are deleted whenever the Space restarts (after an update, or after it sleeps following about 48 hours without visitors), so re-upload them afterwards. Run the `hf upload` command again to deploy code changes.
+Limits: the link only works while your PC is on and the window stays open, and it changes every time you start the script, so an installed app has to be reinstalled from the new link. For a permanent link, use a server (below) or a named Cloudflare tunnel with your own domain.
 
 ## Host it on your own server (Docker)
 
